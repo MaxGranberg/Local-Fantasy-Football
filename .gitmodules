@@ -1,0 +1,3 @@
+[submodule "Local-Fantasy-Football-API"]
+	path = Local-Fantasy-Football-API
+	url = https://github.com/MaxGranberg/Local-Fantasy-Football-API.git

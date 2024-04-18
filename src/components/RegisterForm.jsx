@@ -58,38 +58,56 @@ function RegisterForm({ onBackToLogin, setGlobalFlashMessage }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      {flashMessage && <div className="flash-message">{flashMessage}</div>}
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        required
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Email"
-        value={email}
-        required
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        required
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Confirm Password"
-        required
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
-      <button type="submit">Register</button>
-      <button type="button" onClick={onBackToLogin}>Back to Login</button>
+    <form className="max-w-md mx-auto mt-10 px-8 py-6 bg-white shadow-lg rounded-lg" onSubmit={handleSubmit}>
+      {flashMessage && <div className="flash-message bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{flashMessage}</div>}
+      <div className="mb-4">
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="text"
+          placeholder="Username"
+          value={username}
+          required
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="text"
+          placeholder="Email"
+          value={email}
+          required
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+          type="password"
+          placeholder="Password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <div className="mb-6">
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="password"
+          placeholder="Confirm Password"
+          required
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+      </div>
+      <div className="flex items-center justify-between">
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Register
+        </button>
+        <button className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" onClick={onBackToLogin}>
+          Back to Login
+        </button>
+      </div>
     </form>
   )
 }

@@ -1,8 +1,14 @@
 import React, {
   useState, useEffect, useContext
 } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import Navigation from './components/Navigation';
+import Home from './components/Home';
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
+import MyTeam from './components/MyTeam'
+import League from './components/League'
 import AuthContext from './components/AuthContext'
 
 function App() {
@@ -33,8 +39,9 @@ function App() {
 
   return (
     <>
-      <div className="App">
-        <h1>Welcome to My Fantasy Football Game</h1>
+    <Router>
+      <div className="header-container">
+        <Header />
         {isAuthenticated && (
           <button type="button" className="logout-button" onClick={logout}>
             Logout
@@ -43,8 +50,13 @@ function App() {
       </div>
       {flashMessage && <div className="flash-message-success">{flashMessage}</div>}
       {isAuthenticated ? (
-        <div className="">
-          <p>Du är inloggad</p>
+        <div>
+        <Navigation />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/myTeam" element={<MyTeam />} />
+            <Route path="/league" element={<League />} />
+          </Routes>
         </div>
       ) : (
         <div className="login-container">
@@ -63,6 +75,7 @@ function App() {
           )}
         </div>
       )}
+      </Router>
     </>
   )
 }

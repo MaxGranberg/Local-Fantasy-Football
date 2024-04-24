@@ -56,8 +56,11 @@ const fetchPlayers = async () => {
       }
     });
     if (!response.ok) throw new Error('Failed to fetch players');
-    const playersData = await response.json();
-    setPlayers(playersData.players); // Assuming the response structure has a 'players' field
+    const { players } = await response.json();
+
+    // Filter players based on the selected position
+    const filteredPlayers = selectedPosition ? players.filter(player => player.position === selectedPosition) : players;
+    setPlayers(filteredPlayers);
   } catch (error) {
     console.error('Fetching error:', error);
   }

@@ -129,58 +129,76 @@ const saveFantasyTeam = async () => {
   }
 };
 
-  return (
-    <div className="my-team">
-      <h1>Pick 11 players to your fantasy team</h1>
-      {!myTeamId && (
-        <input
-          type="text"
-          placeholder="Enter your team name"
-          value={teamName}
-          onChange={(e) => setTeamName(e.target.value)}
-        />
-      )}
-      <div className="filters">
-        <select value={selectedTeam} onChange={e => setSelectedTeam(e.target.value)}>
-          <option value="">Select a Team</option>
-          {teams.map(team => (
-            <option key={team.id} value={team.id}>{team.name}</option>
-          ))}
-        </select>
-        <select value={selectedPosition} onChange={e => setSelectedPosition(e.target.value)}>
-          <option value="">Select a Position</option>
-          {positions.map(position => (
-            <option key={position} value={position}>{position}</option>
-          ))}
-        </select>
-      </div>
-      <div className="available-players">
-        <h2>Available Players:</h2>
-        <ul>
-          {players.map(player => (
-            <li key={player.id}>
-              {player.name} - {player.position}
-              <button onClick={() => addPlayerToTeam(player)}>Add to My Team</button>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="current-team">
-        <h2>Current Team:</h2>
-        <ul>
-          {myTeam.map(player => (
-            <li key={player.id}>
-              {player.name} - {player.position}
-            </li>
-          ))}
-        </ul>
-        <button onClick={saveFantasyTeam}
-                disabled={myTeam.length !== 11 || !teamName.trim()}>
-            Save My Team
-        </button>
-      </div>
+return (
+  <div className="my-team max-w-4xl mx-auto p-4 bg-white shadow rounded-lg">
+    <h1 className="text-xl font-bold text-center mb-4">Pick 11 players to your fantasy team</h1>
+    {!myTeamId && (
+      <input
+        type="text"
+        placeholder="Enter your team name"
+        value={teamName}
+        onChange={(e) => setTeamName(e.target.value)}
+        className="mb-4 w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+      />
+    )}
+    <div className="filters grid grid-cols-2 gap-4 mb-4">
+      <select
+        value={selectedTeam}
+        onChange={e => setSelectedTeam(e.target.value)}
+        className="p-2 border rounded cursor-pointer focus:outline-none focus:border-blue-500"
+      >
+        <option value="">Select a Team</option>
+        {teams.map(team => (
+          <option key={team.id} value={team.id}>{team.name}</option>
+        ))}
+      </select>
+      <select
+        value={selectedPosition}
+        onChange={e => setSelectedPosition(e.target.value)}
+        className="p-2 border rounded cursor-pointer focus:outline-none focus:border-blue-500"
+      >
+        <option value="">Select a Position</option>
+        {positions.map(position => (
+          <option key={position} value={position}>{position}</option>
+        ))}
+      </select>
     </div>
-  );
+    <div className="available-players mb-4">
+      <h2 className="text-lg font-semibold mb-2">Available Players:</h2>
+      <ul className="list-none space-y-2">
+        {players.map(player => (
+          <li key={player.id} className="flex justify-between items-center">
+            {player.name} - {player.position}
+            <button
+              onClick={() => addPlayerToTeam(player)}
+              className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded focus:outline-none focus:shadow-outline transition-colors"
+            >
+              Add to My Team
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div className="current-team">
+      <h2 className="text-lg font-semibold mb-2">Current Team:</h2>
+      <ul className="list-none space-y-2">
+        {myTeam.map(player => (
+          <li key={player.id}>
+            {player.name} - {player.position}
+          </li>
+        ))}
+      </ul>
+      <button
+        onClick={saveFantasyTeam}
+        disabled={myTeam.length !== 11 || !teamName.trim()}
+        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        Save My Team
+      </button>
+    </div>
+  </div>
+);
+
 }
 
 export default MyTeam;

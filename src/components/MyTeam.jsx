@@ -216,7 +216,7 @@ const fetchPlayers = async () => {
         <ul className="space-y-4">
           {fantasyTeamPlayers.map(player => (
             <li key={player.id} className="bg-gray-100 p-2 rounded shadow">
-              {player.name} - {player.position}
+              {player.name} - {player.position} - {teams.find(team => team.id === player.team)?.name}
             </li>
           ))}
         </ul>

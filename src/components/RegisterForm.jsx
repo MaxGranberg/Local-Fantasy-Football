@@ -33,7 +33,7 @@ function RegisterForm({ onBackToLogin, setGlobalFlashMessage }) {
     }
 
     try {
-      const response = await fetch('https://fflapi-a68806964222.herokuapp.com/api/v1/register', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

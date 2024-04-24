@@ -10,22 +10,58 @@ function MyTeam() {
 
   useEffect(() => {
     fetchTeams(); // Function to fetch teams
-    fetchUsersFantasyTeam(); // Function to fetch user's team
+    fetchUsersFantasyTeam(); // Adjust to pass actual userId?
   }, []);
 
+  useEffect(() => {
+    if (selectedTeam || selectedPosition) {
+      fetchPlayers();
+    }
+  }, [selectedTeam, selectedPosition]); // Depend on selectedTeam and selectedPosition
+
   const fetchTeams = async () => {
-    // Fetch teams from the API
-    const response = await fetch('https://fflapi-a68806964222.herokuapp.com/api/v1/teams')
-    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/teams`)
+       
+      if (!response.ok) throw new Error('Failed to fetch teams');
+      const teamsData = await response.json();
+      setTeams(teamsData);
+    } catch (error) {
+      console.error('Fetching error:', error);
+    }
   };
 
-  const fetchUsersFantasyTeam = async () => {
-    // Fetch the current user's team from the API
-  };
+  const fetchUsersFantasyTeam = async (userId) => {
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/fantasyTeams`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch fantasy teams');
+    const fantasyTeams = await response.json();
+    const userFantasyTeam = fantasyTeams.find(fantasyTeam => fantasyTeam.owner === userId);
+    setMyTeam(userFantasyTeam ? userFantasyTeam.players : []);
+  } catch (error) {
+    console.error('Fetching error:', error);
+  }
+};
 
-  const fetchPlayers = async () => {
-    // Fetch players based on selectedTeam or selectedPosition
-  };
+const fetchPlayers = async () => {
+  if (!selectedTeam) return;  // Exit if no team is selected
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/teams/${selectedTeam}/players`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch players');
+    const playersData = await response.json();
+    setPlayers(playersData.players); // Assuming the response structure has a 'players' field
+  } catch (error) {
+    console.error('Fetching error:', error);
+  }
+};
 
   const addPlayerToTeam = (player) => {
     if (myTeam.length < 11 && !myTeam.find(p => p.id === player.id)) {
@@ -39,7 +75,7 @@ function MyTeam() {
 
   return (
     <div className="my-team">
-      <h1>My Team</h1>
+      <h1>Pick players to your fantasy team</h1>
       <div className="filters">
         <select value={selectedTeam} onChange={e => {
           setSelectedTeam(e.target.value);

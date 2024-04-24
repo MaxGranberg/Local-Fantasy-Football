@@ -21,7 +21,6 @@ function LoginForm({ onRegister, setGlobalFlashMessage }) {
       })
 
       const data = await response.json();
-      console.log(data)
 
       if (!response.ok) {
         // Handle authentication error

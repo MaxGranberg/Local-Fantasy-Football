@@ -7,11 +7,14 @@ function MyTeam() {
   const [selectedPosition, setSelectedPosition] = useState('');
   const [players, setPlayers] = useState([]);
   const [myTeam, setMyTeam] = useState([]);
+  const [myTeamId, setMyTeamId] = useState(null);
+  const [userId, setUserId] = useState(''); // This should ideally come from authentication context
+  const [teamName, setTeamName] = useState('');
 
   useEffect(() => {
     fetchTeams(); // Function to fetch teams
-    fetchUsersFantasyTeam(); // Adjust to pass actual userId?
-  }, []);
+    fetchUsersFantasyTeam(userId); // Adjust to pass actual userId?
+  }, [userId]);
 
   // In future maybe remove this and show all players and rank them based on their total score??
   useEffect(() => {
@@ -45,6 +48,7 @@ function MyTeam() {
     const fantasyTeams = await response.json();
     const userFantasyTeam = fantasyTeams.find(fantasyTeam => fantasyTeam.owner === userId);
     setMyTeam(userFantasyTeam ? userFantasyTeam.players : []);
+    setTeamName(userFantasyTeam ? userFantasyTeam.teamName : ''); // Set team name if existing
   } catch (error) {
     console.error('Fetching error:', error);
   }
@@ -73,18 +77,69 @@ const fetchPlayers = async () => {
   };
 
   const addPlayerToTeam = (player) => {
-    if (myTeam.length < 11 && !myTeam.find(p => p.id === player.id)) {
-      setMyTeam([...myTeam, player]);
-      // Optionally, update the team on the backend
-    } else {
-      // Handle error (team full or player already added)
-      alert("Team is full or player is already added");
+    if (myTeam.length >= 11) {
+        alert("Your team is already full. You cannot add more players.");
+        return;
     }
+
+    if (myTeam.find(p => p.id === player.id)) {
+        alert("This player is already in your team.");
+        return;
+    }
+
+    const updatedTeam = [...myTeam, player];
+    setMyTeam(updatedTeam);
+};
+
+const saveFantasyTeam = async () => {
+  if (myTeam.length !== 11 || !teamName) {
+      alert("You must have exactly 11 players and a team name to save your team.");
+      return;
+  }
+
+  const url = myTeamId ? 
+      `${process.env.REACT_APP_API_URL}/fantasyTeams/${myTeamId}` : 
+      `${process.env.REACT_APP_API_URL}/fantasyTeams`;
+
+  const method = myTeamId ? 'PATCH' : 'POST';
+  const body = {
+      teamName: teamName,
+      owner: userId,  // Need correct user ID
+      players: myTeam.map(player => player.id),
   };
+
+  try {
+      const response = await fetch(url, {
+          method: method,
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          },
+          body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to save fantasy team');
+
+      if (!myTeamId) setMyTeamId(data.id); // Update state with new team ID if it's a new creation
+      alert('Fantasy team saved successfully!');
+  } catch (error) {
+      console.error('Error saving fantasy team:', error);
+      alert(error.message);
+  }
+};
 
   return (
     <div className="my-team">
-      <h1>Pick players to your fantasy team</h1>
+      <h1>Pick 11 players to your fantasy team</h1>
+      {!myTeamId && (
+        <input
+          type="text"
+          placeholder="Enter your team name"
+          value={teamName}
+          onChange={(e) => setTeamName(e.target.value)}
+        />
+      )}
       <div className="filters">
         <select value={selectedTeam} onChange={e => setSelectedTeam(e.target.value)}>
           <option value="">Select a Team</option>
@@ -100,7 +155,7 @@ const fetchPlayers = async () => {
         </select>
       </div>
       <div className="available-players">
-        <h2>Available Players</h2>
+        <h2>Available Players:</h2>
         <ul>
           {players.map(player => (
             <li key={player.id}>
@@ -111,7 +166,7 @@ const fetchPlayers = async () => {
         </ul>
       </div>
       <div className="current-team">
-        <h2>Current Team</h2>
+        <h2>Current Team:</h2>
         <ul>
           {myTeam.map(player => (
             <li key={player.id}>
@@ -119,6 +174,10 @@ const fetchPlayers = async () => {
             </li>
           ))}
         </ul>
+        <button onClick={saveFantasyTeam}
+                disabled={myTeam.length !== 11 || !teamName.trim()}>
+            Save My Team
+        </button>
       </div>
     </div>
   );

@@ -13,16 +13,19 @@ function MyTeam() {
     fetchUsersFantasyTeam(); // Adjust to pass actual userId?
   }, []);
 
+  // In future maybe remove this and show all players and rank them based on their total score??
   useEffect(() => {
     if (selectedTeam || selectedPosition) {
       fetchPlayers();
+    } else {
+      setPlayers([]);  // Clear players list if no filters are applied
     }
-  }, [selectedTeam, selectedPosition]); // Depend on selectedTeam and selectedPosition
+  }, [selectedTeam, selectedPosition]);
+
 
   const fetchTeams = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/teams`)
-       
       if (!response.ok) throw new Error('Failed to fetch teams');
       const teamsData = await response.json();
       setTeams(teamsData);
@@ -48,23 +51,26 @@ function MyTeam() {
 };
 
 const fetchPlayers = async () => {
-  if (!selectedTeam) return;  // Exit if no team is selected
-  try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/teams/${selectedTeam}/players`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      }
-    });
-    if (!response.ok) throw new Error('Failed to fetch players');
-    const { players } = await response.json();
+  let url = `${process.env.REACT_APP_API_URL}/players`; // Default URL for all players
+    if (selectedTeam) {
+      url = `${process.env.REACT_APP_API_URL}/teams/${selectedTeam}/players`; // URL for players by team
+    }
 
-    // Filter players based on the selected position
-    const filteredPlayers = selectedPosition ? players.filter(player => player.position === selectedPosition) : players;
-    setPlayers(filteredPlayers);
-  } catch (error) {
-    console.error('Fetching error:', error);
-  }
-};
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch players');
+      const data = await response.json();
+      const playersData = selectedTeam ? data.players : data; // Adjust based on your API response structure
+      const filteredPlayers = selectedPosition ? playersData.filter(player => player.position === selectedPosition) : playersData;
+      setPlayers(filteredPlayers);
+    } catch (error) {
+      console.error('Fetching error:', error);
+    }
+  };
 
   const addPlayerToTeam = (player) => {
     if (myTeam.length < 11 && !myTeam.find(p => p.id === player.id)) {
@@ -80,27 +86,19 @@ const fetchPlayers = async () => {
     <div className="my-team">
       <h1>Pick players to your fantasy team</h1>
       <div className="filters">
-        <select value={selectedTeam} onChange={e => {
-          setSelectedTeam(e.target.value);
-          fetchPlayers();
-        }}>
+        <select value={selectedTeam} onChange={e => setSelectedTeam(e.target.value)}>
           <option value="">Select a Team</option>
           {teams.map(team => (
             <option key={team.id} value={team.id}>{team.name}</option>
           ))}
         </select>
-
-        <select value={selectedPosition} onChange={e => {
-          setSelectedPosition(e.target.value);
-          fetchPlayers();
-        }}>
+        <select value={selectedPosition} onChange={e => setSelectedPosition(e.target.value)}>
           <option value="">Select a Position</option>
           {positions.map(position => (
             <option key={position} value={position}>{position}</option>
           ))}
         </select>
       </div>
-
       <div className="available-players">
         <h2>Available Players</h2>
         <ul>
@@ -112,7 +110,6 @@ const fetchPlayers = async () => {
           ))}
         </ul>
       </div>
-
       <div className="current-team">
         <h2>Current Team</h2>
         <ul>

@@ -10,20 +10,27 @@ const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [userId, setUserId] = useState(null);
 
    useEffect(() => {
     const token = localStorage.getItem('authToken');
+    const storedUserId = localStorage.getItem('userId');
     setIsAuthenticated(!!token);
+    setUserId(storedUserId);
   }, []);
 
-  const login = (token) => {
+  const login = (token, userId) => {
     localStorage.setItem('authToken', token);
+    localStorage.setItem('userId', userId);
     setIsAuthenticated(true);
+    setUserId(userId);
   };
 
   const logout = () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
     setIsAuthenticated(false);
+    setUserId(null);
   };
 
   /**  Need to add logout to api?
@@ -42,9 +49,10 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => ({
     isAuthenticated,
+    userId,
     login,
     logout,
-  }), [isAuthenticated]);
+  }), [isAuthenticated, userId]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

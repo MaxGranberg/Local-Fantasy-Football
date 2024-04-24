@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import AuthContext from './AuthContext';
+import { type } from '@testing-library/user-event/dist/type';
 
 function MyTeam() {
   const [teams, setTeams] = useState([]); // Teams fetched from the API
@@ -6,14 +8,17 @@ function MyTeam() {
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('');
   const [players, setPlayers] = useState([]);
-  const [myTeam, setMyTeam] = useState([]);
-  const [myTeamId, setMyTeamId] = useState(null);
-  const [userId, setUserId] = useState(''); // This should ideally come from authentication context
-  const [teamName, setTeamName] = useState('');
+  const [fantasyTeamPlayers, setFantasyTeamPlayers] = useState([]);
+  const [myFantasyTeamId, setMyFantasyTeamId] = useState(null);
+  const [fantasyTeamName, setFantasyTeamName] = useState('');
+
+  const { userId } = useContext(AuthContext)
 
   useEffect(() => {
-    fetchTeams(); // Function to fetch teams
-    fetchUsersFantasyTeam(userId); // Adjust to pass actual userId?
+    fetchTeams();
+    if (userId) {
+      fetchUsersFantasyTeam(userId);
+    }
   }, [userId]);
 
   // In future maybe remove this and show all players and rank them based on their total score??
@@ -24,6 +29,12 @@ function MyTeam() {
       setPlayers([]);  // Clear players list if no filters are applied
     }
   }, [selectedTeam, selectedPosition]);
+
+  useEffect(() => {
+    if (myFantasyTeamId) {
+      fetchUsersFantasyTeamPlayers(myFantasyTeamId);
+    }
+  }, [myFantasyTeamId]);
 
 
   const fetchTeams = async () => {
@@ -38,21 +49,37 @@ function MyTeam() {
   };
 
   const fetchUsersFantasyTeam = async (userId) => {
-  try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/fantasyTeams`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      }
-    });
-    if (!response.ok) throw new Error('Failed to fetch fantasy teams');
-    const fantasyTeams = await response.json();
-    const userFantasyTeam = fantasyTeams.find(fantasyTeam => fantasyTeam.owner === userId);
-    setMyTeam(userFantasyTeam ? userFantasyTeam.players : []);
-    setTeamName(userFantasyTeam ? userFantasyTeam.teamName : ''); // Set team name if existing
-  } catch (error) {
-    console.error('Fetching error:', error);
-  }
-};
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/fantasyTeams`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch fantasy teams');
+      const fantasyTeams = await response.json();
+      const userFantasyTeam = fantasyTeams.find(fantasyTeam => fantasyTeam.owner === userId);
+      setFantasyTeamPlayers(userFantasyTeam ? userFantasyTeam.players : []);
+      setFantasyTeamName(userFantasyTeam ? userFantasyTeam.teamName : '');
+      setMyFantasyTeamId(userFantasyTeam ? userFantasyTeam.id : null);
+    } catch (error) {
+      console.error('Fetching error:', error);
+    }
+  };
+
+  const fetchUsersFantasyTeamPlayers = async (fantasyTeamId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/fantasyTeams/${fantasyTeamId}/players`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch fantasy teams players');
+      const data = await response.json();
+      setFantasyTeamPlayers(data.players);
+    } catch (error) {
+      console.error('Fetching error:', error);
+    }
+  };
 
 const fetchPlayers = async () => {
   let url = `${process.env.REACT_APP_API_URL}/players`; // Default URL for all players
@@ -68,7 +95,7 @@ const fetchPlayers = async () => {
       });
       if (!response.ok) throw new Error('Failed to fetch players');
       const data = await response.json();
-      const playersData = selectedTeam ? data.players : data; // Adjust based on your API response structure
+      const playersData = selectedTeam ? data.players : data;
       const filteredPlayers = selectedPosition ? playersData.filter(player => player.position === selectedPosition) : playersData;
       setPlayers(filteredPlayers);
     } catch (error) {
@@ -77,67 +104,71 @@ const fetchPlayers = async () => {
   };
 
   const addPlayerToTeam = (player) => {
-    if (myTeam.length >= 11) {
+    if (fantasyTeamPlayers.length >= 11) {
         alert("Your team is already full. You cannot add more players.");
         return;
     }
 
-    if (myTeam.find(p => p.id === player.id)) {
+    if (fantasyTeamPlayers.find(p => p.id === player.id)) {
         alert("This player is already in your team.");
         return;
     }
 
-    const updatedTeam = [...myTeam, player];
-    setMyTeam(updatedTeam);
-};
-
-const saveFantasyTeam = async () => {
-  if (myTeam.length !== 11 || !teamName) {
-      alert("You must have exactly 11 players and a team name to save your team.");
-      return;
-  }
-
-  const url = myTeamId ? 
-      `${process.env.REACT_APP_API_URL}/fantasyTeams/${myTeamId}` : 
-      `${process.env.REACT_APP_API_URL}/fantasyTeams`;
-
-  const method = myTeamId ? 'PATCH' : 'POST';
-  const body = {
-      teamName: teamName,
-      owner: userId,  // Need correct user ID
-      players: myTeam.map(player => player.id),
+    const updatedTeam = [...fantasyTeamPlayers, player];
+    setFantasyTeamPlayers(updatedTeam);
   };
 
-  try {
-      const response = await fetch(url, {
-          method: method,
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-          },
-          body: JSON.stringify(body)
-      });
+  const saveFantasyTeam = async () => {
+    if (fantasyTeamPlayers.length !== 11 || !fantasyTeamName) {
+      alert("You must have exactly 11 players and a team name to save your team.");
+      return;
+    }
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to save fantasy team');
+    const url = myFantasyTeamId ? 
+        `${process.env.REACT_APP_API_URL}/fantasyTeams/${myFantasyTeamId}` : 
+        `${process.env.REACT_APP_API_URL}/fantasyTeams`;
 
-      if (!myTeamId) setMyTeamId(data.id); // Update state with new team ID if it's a new creation
-      alert('Fantasy team saved successfully!');
-  } catch (error) {
-      console.error('Error saving fantasy team:', error);
-      alert(error.message);
-  }
-};
+
+    const method = myFantasyTeamId ? 'PATCH' : 'POST';
+    const body = {
+        teamName: fantasyTeamName,
+        owner: userId,
+        players: fantasyTeamPlayers.map(player => player.id),
+    };
+
+    try {
+      console.log(method)
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            },
+            body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Failed to save fantasy team');
+
+        if (!myFantasyTeamId) {  // Only set the ID if it's a new creation
+          setMyFantasyTeamId(data.id);
+        }
+        alert('Fantasy team saved successfully!');
+    } catch (error) {
+        console.error('Error saving fantasy team:', error);
+        alert(error.message);
+    }
+  };
 
 return (
   <div className="my-team max-w-4xl mx-auto p-4 bg-white shadow rounded-lg">
     <h1 className="text-xl font-bold text-center mb-4">Pick 11 players to your fantasy team</h1>
-    {!myTeamId && (
+    {(!myFantasyTeamId || !fantasyTeamName) && (
       <input
         type="text"
         placeholder="Enter your team name"
-        value={teamName}
-        onChange={(e) => setTeamName(e.target.value)}
+        value={fantasyTeamName}
+        onChange={(e) => setFantasyTeamName(e.target.value)}
         className="mb-4 w-full p-2 border rounded focus:outline-none focus:border-blue-500"
       />
     )}
@@ -182,7 +213,7 @@ return (
     <div className="current-team">
       <h2 className="text-lg font-semibold mb-2">Current Team:</h2>
       <ul className="list-none space-y-2">
-        {myTeam.map(player => (
+        {fantasyTeamPlayers.map(player => (
           <li key={player.id}>
             {player.name} - {player.position}
           </li>
@@ -190,7 +221,7 @@ return (
       </ul>
       <button
         onClick={saveFantasyTeam}
-        disabled={myTeam.length !== 11 || !teamName.trim()}
+        disabled={fantasyTeamPlayers.length !== 11 || !fantasyTeamName.trim()}
         className="mt-4 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         Save My Team

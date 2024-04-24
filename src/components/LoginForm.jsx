@@ -28,8 +28,7 @@ function LoginForm({ onRegister, setGlobalFlashMessage }) {
         return
       }
 
-      login(data.access_token);
-      setGlobalFlashMessage('Login successful!')
+      login(data.access_token, data.id);
     } catch (error) {
       // Handle request error
       setFlashMessage('An error occurred. Please try again later.')

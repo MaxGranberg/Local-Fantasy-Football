@@ -9,6 +9,7 @@ import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
 import MyTeam from './components/MyTeam'
 import League from './components/League'
+import Fixtures from './components/Fixtures'
 import AuthContext from './components/AuthContext'
 import Footer from './components/Footer';
 
@@ -51,6 +52,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/myTeam" element={<MyTeam />} />
                   <Route path="/league" element={<League />} />
+                  <Route path="/fixtures" element={<Fixtures />} />
                 </Routes>
                 <button
                   type="button"

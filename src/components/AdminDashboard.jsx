@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Results from './Results';
 
 function AdminDashboard() {
     const [teams, setTeams] = useState([]);
@@ -74,6 +75,7 @@ function AdminDashboard() {
 
     return (
         <div className="admin-dashboard max-w-7xl mx-auto px-6 py-8 bg-gray-50 shadow-xl rounded-lg">
+            <Results></Results>
             <h1 className="text-2xl font-bold text-center mb-6">Admin Kontrollpanel: Uppdatera spelares poäng</h1>
             <select
                 value={selectedTeam}
@@ -88,7 +90,7 @@ function AdminDashboard() {
             <ul>
                 {players.map(player => (
                     <li key={player.id} className="flex justify-between items-center bg-white p-4 shadow rounded-lg mb-2">
-                        {player.name} - {player.position} - Nuvarande poäng: {player.totalPoints}
+                        {player.name} - {player.position} - Total poäng: {player.totalPoints}
                         <form onSubmit={(e) => {
                             e.preventDefault();
                             const addedPoints = parseInt(e.target.elements.points.value);

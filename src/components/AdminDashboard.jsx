@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
-import AuthContext from './AuthContext';
+import React, { useState, useEffect } from 'react';
 
 function AdminDashboard() {
     const [teams, setTeams] = useState([]);

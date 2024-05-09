@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
 import Home from './components/Home';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminDashboard from './components/AdminDashboard';
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
 import MyTeam from './components/MyTeam'
@@ -53,6 +55,7 @@ function App() {
                   <Route path="/myTeam" element={<MyTeam />} />
                   <Route path="/league" element={<League />} />
                   <Route path="/fixtures" element={<Fixtures />} />
+                  <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                 </Routes>
                 <button
                   type="button"

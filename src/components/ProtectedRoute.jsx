@@ -1,16 +1,16 @@
 import React, { useContext } from 'react';
-import { Route, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import AuthContext from './AuthContext';
 
-const ProtectedRoute = ({ children, ...rest }) => {
+const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, role } = useContext(AuthContext);
 
   if (!isAuthenticated || role !== 'admin') {
-    // Redirect them to the home page if they are not an admin
+    // Redirect non-admin users to the home page
     return <Navigate to="/" replace />;
   }
 
-  return <Route {...rest}>{children}</Route>;
+  return children;  // Render children directly if the user is an admin
 };
 
 export default ProtectedRoute;

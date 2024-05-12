@@ -217,7 +217,11 @@ const fetchPlayers = async () => {
           <ul className="space-y-2">
             {players.map(player => (
               <li key={player.id} className="flex justify-between items-center bg-white p-2 rounded-lg shadow">
-                {player.name} - {player.position}
+                <div className="flex items-center">
+                  <span className="font-bold">{player.name}</span>
+                  <span className="mx-2">-</span>
+                  <span className="italic">{player.position}</span>
+                </div>
                 <button
                   onClick={() => addPlayerToTeam(player)}
                   className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
@@ -232,20 +236,28 @@ const fetchPlayers = async () => {
       <div className="current-team overflow-y-auto max-h-screen">
         <h2 className="text-lg text-center font-semibold text-blue-800 mt-4 mb-4">Current Team: {fantasyTeamName}</h2>
         <ul className="space-y-4">
-  {fantasyTeamPlayers.map(player => (
-    <li key={player.id} className="bg-gray-100 p-2 rounded shadow flex justify-between items-center">
-      <div>
-        {player.name} - {player.position} - {teams.find(team => team.id === player.team)?.name}
-      </div>
-      <button
-        onClick={() => removePlayerFromTeam(player.id)}
-        className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-      >
-        Remove
-      </button>
-    </li>
-  ))}
-</ul>
+        {fantasyTeamPlayers.map(player => {
+            const teamName = teams.find(team => team.id === player.team)?.name;
+            return (
+              <li key={player.id} className="bg-gray-100 p-2 rounded shadow flex justify-between items-center">
+              <div className="flex items-center">
+                  <span className="font-bold">{player.name}</span>
+                  <span className="mx-2">-</span>
+                  <span className="italic">{player.position}</span>
+                  {teamName && (
+                      <span className="ml-2 italic text-gray-600">- {teamName}</span>
+                  )}
+              </div>
+                    <button
+                        onClick={() => removePlayerFromTeam(player.id)}
+                        className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                    >
+                        Remove
+                    </button>
+                </li>
+            );
+        })}
+    </ul>
 
         <button
           onClick={saveFantasyTeam}

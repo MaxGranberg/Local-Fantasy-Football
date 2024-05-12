@@ -118,6 +118,11 @@ const fetchPlayers = async () => {
     setFantasyTeamPlayers(updatedTeam);
   };
 
+  const removePlayerFromTeam = playerId => {
+    const updatedTeam = fantasyTeamPlayers.filter(player => player.id !== playerId);
+    setFantasyTeamPlayers(updatedTeam);
+  };
+  
   const saveFantasyTeam = async () => {
     if (fantasyTeamPlayers.length !== 11 || !fantasyTeamName) {
       alert("You must have exactly 11 players and a team name to save your team.");
@@ -214,12 +219,21 @@ const fetchPlayers = async () => {
       <div className="current-team overflow-y-auto max-h-screen">
         <h2 className="text-lg text-center font-semibold text-blue-800 mt-4 mb-4">Current Team: {fantasyTeamName}</h2>
         <ul className="space-y-4">
-          {fantasyTeamPlayers.map(player => (
-            <li key={player.id} className="bg-gray-100 p-2 rounded shadow">
-              {player.name} - {player.position} - {teams.find(team => team.id === player.team)?.name}
-            </li>
-          ))}
-        </ul>
+  {fantasyTeamPlayers.map(player => (
+    <li key={player.id} className="bg-gray-100 p-2 rounded shadow flex justify-between items-center">
+      <div>
+        {player.name} - {player.position} - {teams.find(team => team.id === player.team)?.name}
+      </div>
+      <button
+        onClick={() => removePlayerFromTeam(player.id)}
+        className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+      >
+        Remove
+      </button>
+    </li>
+  ))}
+</ul>
+
         <button
           onClick={saveFantasyTeam}
           disabled={fantasyTeamPlayers.length !== 11 || !fantasyTeamName.trim()}

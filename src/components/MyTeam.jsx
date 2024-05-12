@@ -14,6 +14,16 @@ function MyTeam() {
 
   const { userId } = useContext(AuthContext)
 
+  const sortPlayersByPosition = (players) => {
+    const positionPriority = {
+      'Goalkeeper': 1,
+      'Defender': 2,
+      'Midfielder': 3,
+      'Forward': 4
+    };
+    return players.sort((a, b) => positionPriority[a.position] - positionPriority[b.position]);
+  };
+
   useEffect(() => {
     fetchTeams();
     if (userId) {
@@ -75,7 +85,8 @@ function MyTeam() {
       });
       if (!response.ok) throw new Error('Failed to fetch fantasy teams players');
       const data = await response.json();
-      setFantasyTeamPlayers(data.players);
+      const sortedPlayers = sortPlayersByPosition(data.players);
+      setFantasyTeamPlayers(sortedPlayers);
     } catch (error) {
       console.error('Fetching error:', error);
     }
@@ -115,12 +126,14 @@ const fetchPlayers = async () => {
     }
 
     const updatedTeam = [...fantasyTeamPlayers, player];
-    setFantasyTeamPlayers(updatedTeam);
+    const sortedUpdatedTeam = sortPlayersByPosition(updatedTeam);
+    setFantasyTeamPlayers(sortedUpdatedTeam);
   };
 
   const removePlayerFromTeam = playerId => {
     const updatedTeam = fantasyTeamPlayers.filter(player => player.id !== playerId);
-    setFantasyTeamPlayers(updatedTeam);
+    const sortedUpdatedTeam = sortPlayersByPosition(updatedTeam);
+    setFantasyTeamPlayers(sortedUpdatedTeam);
   };
   
   const saveFantasyTeam = async () => {

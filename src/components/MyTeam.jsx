@@ -125,7 +125,35 @@ const fetchPlayers = async () => {
         return;
     }
 
-    const updatedTeam = [...fantasyTeamPlayers, player];
+    const positionCount = fantasyTeamPlayers.reduce((count, p) => {
+        count[p.position] = (count[p.position] || 0) + 1;
+        return count;
+    }, {});
+
+    const newPositionCount = { ...positionCount, [player.position]: (positionCount[player.position] || 0) + 1 };
+
+    // Define the maximum and minimum limits for each position
+    const positionLimits = {
+        'Goalkeeper': { max: 1, min: 1 },
+        'Defender': { max: 5, min: 3 },
+        'Midfielder': { max: 6, min: 3 },
+        'Forward': { max: 3, min: 1 }
+    };
+
+    // Check maximum limit for the added player's position
+    if (newPositionCount[player.position] > positionLimits[player.position].max) {
+        alert(`You cannot have more than ${positionLimits[player.position].max} ${player.position}(s).`);
+        return;
+    }
+
+    // Enhance the player object with the team name before adding it to the state
+    const playerWithTeam = {
+        ...player,
+        teamName: teams.find(team => team.id === player.team)?.name
+    };
+
+    // Add player to the team
+    const updatedTeam = [...fantasyTeamPlayers, playerWithTeam];
     const sortedUpdatedTeam = sortPlayersByPosition(updatedTeam);
     setFantasyTeamPlayers(sortedUpdatedTeam);
   };
@@ -141,6 +169,29 @@ const fetchPlayers = async () => {
       alert("You must have exactly 11 players and a team name to save your team.");
       return;
     }
+
+      // Count players by position in the current team
+      const positionCount = fantasyTeamPlayers.reduce((count, player) => {
+        count[player.position] = (count[player.position] || 0) + 1;
+        return count;
+      }, {});
+  
+      // Define the minimum limits for each position
+      const positionLimits = {
+          'Goalkeeper': { min: 1, max: 1 },
+          'Defender': { min: 3, max: 5 },
+          'Midfielder': { min: 3, max: 6 },
+          'Forward': { min: 1, max: 3 }
+      };
+  
+      // Check if all position limits are met
+      for (const [position, limits] of Object.entries(positionLimits)) {
+          const count = positionCount[position] || 0;
+          if (count < limits.min || count > limits.max) {
+              alert(`Invalid number of ${position}s. Must have between ${limits.min} and ${limits.max}.`);
+              return;
+          }
+      }
 
     const url = myFantasyTeamId ? 
         `${process.env.REACT_APP_API_URL}/fantasyTeams/${myFantasyTeamId}` : 
@@ -171,6 +222,7 @@ const fetchPlayers = async () => {
           setMyFantasyTeamId(data.id);
         }
         alert('Fantasy team saved successfully!');
+        fetchUsersFantasyTeamPlayers(data.id || myFantasyTeamId);
     } catch (error) {
         console.error('Error saving fantasy team:', error);
         alert(error.message);
@@ -180,7 +232,7 @@ const fetchPlayers = async () => {
   return (
     <div className="my-team max-w-7xl mx-auto px-6 py-8 bg-gray-50 shadow-xl rounded-xl grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4 mb-8">
       <div className="flex flex-col">
-        <h1 className="text-2xl font-bold text-center text-blue-800 mb-6">Pick 11 players for your fantasy team</h1>
+        <h1 className="text-2xl font-bold text-center text-blue-800 mb-6">Välj 11 spelare till ditt fantasylag</h1>
         {(!myFantasyTeamId || !fantasyTeamName) && (
           <input
             type="text"
@@ -196,7 +248,7 @@ const fetchPlayers = async () => {
             onChange={e => setSelectedTeam(e.target.value)}
             className="p-3 border border-gray-300 rounded cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
           >
-            <option value="">Select a Team</option>
+            <option value="">Välj ett lag</option>
             {teams.map(team => (
               <option key={team.id} value={team.id}>{team.name}</option>
             ))}
@@ -206,14 +258,14 @@ const fetchPlayers = async () => {
             onChange={e => setSelectedPosition(e.target.value)}
             className="p-3 border border-gray-300 rounded cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
           >
-            <option value="">Select a Position</option>
+            <option value="">Välj en position</option>
             {positions.map(position => (
               <option key={position} value={position}>{position}</option>
             ))}
           </select>
         </div>
         <div className="available-players overflow-y-auto max-h-screen">
-          <h2 className="text-lg font-semibold text-blue-800 mb-4">Available Players:</h2>
+          <h2 className="text-lg font-semibold text-blue-800 mb-4">Tillgängliga spelare:</h2>
           <ul className="space-y-2">
             {players.map(player => (
               <li key={player.id} className="flex justify-between items-center bg-white p-2 rounded-lg shadow">
@@ -226,7 +278,7 @@ const fetchPlayers = async () => {
                   onClick={() => addPlayerToTeam(player)}
                   className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                 >
-                  Add to My Team
+                  Lägg till i mitt lag
                 </button>
               </li>
             ))}
@@ -234,7 +286,7 @@ const fetchPlayers = async () => {
         </div>
       </div>
       <div className="current-team overflow-y-auto max-h-screen">
-        <h2 className="text-lg text-center font-semibold text-blue-800 mt-4 mb-4">Current Team: {fantasyTeamName}</h2>
+        <h2 className="text-lg text-center font-semibold text-blue-800 mt-4 mb-4">Nuvarande lag: {fantasyTeamName}</h2>
         <ul className="space-y-4">
         {fantasyTeamPlayers.map(player => {
             const teamName = teams.find(team => team.id === player.team)?.name;
@@ -252,7 +304,7 @@ const fetchPlayers = async () => {
                         onClick={() => removePlayerFromTeam(player.id)}
                         className="bg-red-500 hover:bg-red-700 text-white py-1 px-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                     >
-                        Remove
+                        Ta bort
                     </button>
                 </li>
             );
@@ -264,7 +316,7 @@ const fetchPlayers = async () => {
           disabled={fantasyTeamPlayers.length !== 11 || !fantasyTeamName.trim()}
           className="mt-4 bg-green-500 hover:bg-green-700 text-white py-3 px-6 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full"
         >
-          Save My Team
+          Spara laget
         </button>
       </div>
     </div>

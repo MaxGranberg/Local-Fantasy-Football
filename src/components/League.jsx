@@ -29,9 +29,9 @@ function LeagueStandings() {
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th scope="col" className="py-3 px-6">Team Name</th>
-              <th scope="col" className="py-3 px-6">Username</th>
-              <th scope="col" className="py-3 px-6">Total Score</th>
+              <th scope="col" className="py-3 px-6">Lagnamn</th>
+              <th scope="col" className="py-3 px-6">Användarnamn</th>
+              <th scope="col" className="py-3 px-6">Totalpoäng</th>
             </tr>
           </thead>
           <tbody>

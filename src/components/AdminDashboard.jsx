@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Results from './Results';
+import FlashMessage from './FlashMessage';
 
 function AdminDashboard() {
     const [teams, setTeams] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState('');
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [flashMessage, setFlashMessage] = useState(null);
 
     useEffect(() => {
         fetchTeams();
@@ -20,6 +22,7 @@ function AdminDashboard() {
             const data = await response.json();
             setTeams(data);
         } catch (error) {
+            setFlashMessage({ message: 'Error fetching teams', type: 'error' });
             console.error('Error fetching teams:', error);
         } finally {
             setLoading(false);
@@ -43,6 +46,7 @@ function AdminDashboard() {
             const data = await response.json();
             setPlayers(data.players);
         } catch (error) {
+            setFlashMessage({ message: 'Error fetching players', type: 'error' });
             console.error('Error fetching players:', error);
         } finally {
             setLoading(false);
@@ -63,11 +67,11 @@ function AdminDashboard() {
                 const data = await response.json();
                 throw new Error(data.message || 'Failed to update player points');
             }
-            alert('Points updated successfully!');
+            setFlashMessage({ message: 'Poängen uppdaterade!', type: 'success' });
             fetchPlayers();  // Refresh the player list to show updated points
         } catch (error) {
+            setFlashMessage({ message: error.message, type: 'error' });
             console.error('Error updating player points:', error);
-            alert(error.message);
         }
     };
 
@@ -75,7 +79,16 @@ function AdminDashboard() {
 
     return (
         <div className="admin-dashboard max-w-7xl mx-auto px-6 py-8 bg-gray-50 shadow-xl rounded-lg">
-            <Results></Results>
+            {flashMessage && (
+                <div className="mb-4">
+                    <FlashMessage
+                        message={flashMessage.message}
+                        type={flashMessage.type}
+                        onClose={() => setFlashMessage(null)}
+                    />
+                </div>
+            )}
+            <Results />
             <h1 className="text-2xl font-bold text-center mb-6">Admin Kontrollpanel: Uppdatera spelares poäng</h1>
             <select
                 value={selectedTeam}

@@ -24,14 +24,14 @@ function LoginForm({ onRegister, setGlobalFlashMessage }) {
 
       if (!response.ok) {
         // Handle authentication error
-        setFlashMessage('Login failed. Please check your username and password.')
+        setFlashMessage('Inloggning misslyckades, kontrollera ditt användarnamn och lösenord.')
         return
       }
 
       login(data.access_token, data.id, data.role);
     } catch (error) {
       // Handle request error
-      setFlashMessage('An error occurred. Please try again later.')
+      setFlashMessage('Ett fel inträffade, försök igen senare.')
     }
   }
 

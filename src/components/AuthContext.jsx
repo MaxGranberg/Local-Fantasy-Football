@@ -40,20 +40,6 @@ export function AuthProvider({ children }) {
     setRole('');
   };
 
-  /**  Need to add logout to api?
-  const logout = async () => {
-    const response = await fetch('https://api/v1/logout', {
-      method: 'POST',
-      credentials: 'include', // Make sure to include credentials in the request
-    })
-
-    if (response.ok) {
-      setIsAuthenticated(false)
-      window.location.reload()
-    }
-  }
- */
-
   const value = useMemo(() => ({
     isAuthenticated,
     userId,

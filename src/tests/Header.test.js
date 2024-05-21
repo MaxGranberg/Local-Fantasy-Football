@@ -10,6 +10,6 @@ describe('Header Component', () => {
 
   it('displays the correct title', () => {
     render(<Header />);
-    expect(screen.getByText("Local Fantasy Football League")).toBeInTheDocument();
+    expect(screen.getByText("GräsrotsFantasy - Din lokala fantasyliga")).toBeInTheDocument();
   });
 });

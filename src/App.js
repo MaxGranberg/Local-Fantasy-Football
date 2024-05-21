@@ -61,7 +61,7 @@ function App() {
                   type="button"
                   className="logout-button absolute top-0 right-0 m-4 bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   onClick={logout}>
-                  Logout 
+                  Logga ut 
                   </button>
               </>
             ) : (

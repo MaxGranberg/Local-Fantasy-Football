@@ -4,3 +4,6 @@ For more information about this project you can read the wiki! https://github.co
 
 
 In the Local-Fantasy-Football-API folder you will find the repository for the backend of the application. https://github.com/MaxGranberg/Local-Fantasy-Football-API
+
+
+Here you will find the deployed application: https://grasrotsfantasy-9871479275bf.herokuapp.com/

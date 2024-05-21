@@ -13,22 +13,22 @@ function RegisterForm({ onBackToLogin, setGlobalFlashMessage }) {
 
     // Check if passwords match
     if (password !== confirmPassword) {
-      setFlashMessage('Passwords do not match.')
+      setFlashMessage('Lösenorden matchar inte.')
       return
     }
 
     if (password.length < 10) {
-      setFlashMessage('Password needs to be 10 characters or more.')
+      setFlashMessage('Lösenord behöver minst vara 10 tecken långt')
       return
     }
 
     if (username.length < 3) {
-      setFlashMessage('Username needs to be 3 characters or more')
+      setFlashMessage('Användarnamn behöver minst vara 3 tecken långt')
       return
     }
 
     if (/^\d/.test(username)) {
-      setFlashMessage('Username cant have a number as the first character')
+      setFlashMessage('Användarnamn kan inte ha nummer som första tecken')
       return
     }
 
@@ -42,15 +42,14 @@ function RegisterForm({ onBackToLogin, setGlobalFlashMessage }) {
       })
 
       if (!response.ok) {
-        // Handle registration error, error most likely to be not a unique username.
-        // My custom errors from server is not being sent after deploying on Heroku.
-        setFlashMessage('Registration failed. Try another username.')
+        // Handle registration error, error most likely to be not a unique username or not valid email.
+        setFlashMessage('Registrering misslyckades, försök igen.')
         return
       }
 
       // Registration was successful, navigate back to login form
       onBackToLogin()
-      setGlobalFlashMessage('Registration successful, you can now login!')
+      setGlobalFlashMessage('Registrering lyckades!')
     } catch (error) {
       // Handle request error
       setFlashMessage('An error occurred. Please try again later.')

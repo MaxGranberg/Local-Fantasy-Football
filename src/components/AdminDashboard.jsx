@@ -75,7 +75,7 @@ function AdminDashboard() {
         }
     };
 
-    if (loading) return <p className='text-center mt-6'>Loading...</p>;
+    if (loading) return <p className='text-center mt-6'>Laddar...</p>;
 
     return (
         <div className="admin-dashboard max-w-7xl mx-auto px-6 py-8 bg-gray-50 shadow-xl rounded-lg">

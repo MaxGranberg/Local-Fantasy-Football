@@ -33,7 +33,7 @@ describe('RegisterForm', () => {
 
     fireEvent.click(screen.getByText('Registrera'));
 
-    expect(screen.getByText('Passwords do not match.')).toBeInTheDocument();
+    expect(screen.getByText('Lösenorden matchar inte.')).toBeInTheDocument();
   });
 
   test('shows error message if password is too short', () => {
@@ -46,7 +46,7 @@ describe('RegisterForm', () => {
 
     fireEvent.click(screen.getByText('Registrera'));
 
-    expect(screen.getByText('Password needs to be 10 characters or more.')).toBeInTheDocument();
+    expect(screen.getByText('Lösenord behöver minst vara 10 tecken långt')).toBeInTheDocument();
   });
 
   test('shows error message if username is too short', () => {
@@ -59,6 +59,6 @@ describe('RegisterForm', () => {
 
     fireEvent.click(screen.getByText('Registrera'));
 
-    expect(screen.getByText('Username needs to be 3 characters or more')).toBeInTheDocument();
+    expect(screen.getByText('Användarnamn behöver minst vara 3 tecken långt')).toBeInTheDocument();
   });
 });

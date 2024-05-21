@@ -13,6 +13,7 @@ function MyTeam() {
   const [fantasyTeamName, setFantasyTeamName] = useState('');
   const [flashMessage, setFlashMessage] = useState(null);
 
+  // Using context to retrieve the current user's ID
   const { userId } = useContext(AuthContext)
 
   const sortPlayersByPosition = (players) => {
@@ -32,6 +33,7 @@ function MyTeam() {
     }
   }, [userId]);
 
+  // Fetch players when team or position selection changes
   useEffect(() => {
     if (selectedTeam || selectedPosition) {
       fetchPlayers();
@@ -146,13 +148,13 @@ function MyTeam() {
     }
 
     // Enhance the player object with the team name before adding it to the state
-    const playerWithTeam = {
+    const playerWithTeamname = {
       ...player,
       teamName: teams.find(team => team.id === player.team)?.name
     };
 
     // Add player to the team
-    const updatedTeam = [...fantasyTeamPlayers, playerWithTeam];
+    const updatedTeam = [...fantasyTeamPlayers, playerWithTeamname];
     const sortedUpdatedTeam = sortPlayersByPosition(updatedTeam);
     setFantasyTeamPlayers(sortedUpdatedTeam);
   };
@@ -211,7 +213,7 @@ function MyTeam() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Failed to save fantasy team');
 
-      if (!myFantasyTeamId) {  // Only set the ID if it's a new creation
+      if (!myFantasyTeamId) {  // Only set the ID if it's a new team
         setMyFantasyTeamId(data.id);
       }
       setFlashMessage({ message: 'Ditt fantasylag är sparat!', type: 'success' });

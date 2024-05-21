@@ -304,6 +304,8 @@ function MyTeam() {
                     {teamName && (
                       <span className="ml-2 italic text-gray-600">- {teamName}</span>
                     )}
+                    <span className="mx-2">-</span>
+                    <span className="italic text-gray-600">{player.totalPoints} poäng totalt</span>
                   </div>
                   <button
                     onClick={() => removePlayerFromTeam(player.id)}

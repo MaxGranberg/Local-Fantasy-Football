@@ -47,7 +47,6 @@ function RegisterForm({ onBackToLogin, setGlobalFlashMessage }) {
         return
       }
 
-      // Registration was successful, navigate back to login form
       onBackToLogin()
       setGlobalFlashMessage('Registrering lyckades!')
     } catch (error) {

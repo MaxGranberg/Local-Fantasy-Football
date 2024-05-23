@@ -2,12 +2,10 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LoginForm from '../components/LoginForm';
-import AuthContext from '../components/AuthContext'; // Make sure the path is correct
+import AuthContext from '../components/AuthContext';
 
-// Mock the login function
 const mockLogin = jest.fn();
 
-// Create a custom render method that includes the AuthProvider wrapper
 const customRender = (ui, { providerProps, ...renderOptions }) => {
   return render(
     <AuthContext.Provider value={providerProps}>{ui}</AuthContext.Provider>,

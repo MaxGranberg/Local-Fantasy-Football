@@ -23,14 +23,12 @@ function LoginForm({ onRegister, setGlobalFlashMessage }) {
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle authentication error
         setFlashMessage('Inloggning misslyckades, kontrollera ditt användarnamn och lösenord.')
         return
       }
 
       login(data.access_token, data.id, data.role);
     } catch (error) {
-      // Handle request error
       setFlashMessage('Ett fel inträffade, försök igen senare.')
     }
   }

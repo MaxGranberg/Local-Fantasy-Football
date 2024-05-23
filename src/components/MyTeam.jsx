@@ -4,7 +4,7 @@ import FlashMessage from './FlashMessage';
 
 function MyTeam() {
   const [teams, setTeams] = useState([]); // Teams fetched from the API
-  const [positions, setPositions] = useState(['Goalkeeper', 'Defender', 'Midfielder', 'Forward']);
+  const [positions] = useState(['Goalkeeper', 'Defender', 'Midfielder', 'Forward']);
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('');
   const [players, setPlayers] = useState([]);

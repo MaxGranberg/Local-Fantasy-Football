@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 import '@testing-library/jest-dom';
 import Navigation from '../components/Navigation';
-import AuthContext from '../components/AuthContext';  // Ensure this import is correct
+import AuthContext from '../components/AuthContext';
 
 describe('Navigation Component', () => {
   it('renders Admin Dashboard link for admin role', () => {

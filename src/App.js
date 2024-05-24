@@ -47,6 +47,11 @@ function App() {
         <div className="App min-h-screen flex flex-col">
           <Header />
           <main className="flex-grow">
+            {flashMessage && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative text-center">
+                {flashMessage}
+              </div>
+            )}
             {isAuthenticated ? (
               <>
                 <Navigation />
@@ -61,8 +66,8 @@ function App() {
                   type="button"
                   className="logout-button absolute top-0 right-0 m-4 bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   onClick={logout}>
-                  Logga ut 
-                  </button>
+                  Logga ut
+                </button>
               </>
             ) : (
               <div className="login-container">
@@ -74,7 +79,6 @@ function App() {
                   />
                 ) : (
                   <RegisterForm
-                    onRegister={switchToLogin}
                     onBackToLogin={switchToLogin}
                     setGlobalFlashMessage={setFlashMessage}
                   />
